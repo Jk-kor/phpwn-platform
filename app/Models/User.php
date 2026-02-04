@@ -13,18 +13,20 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
+     * Les attributs qui peuvent ?tre assign?s en masse.
      *
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'username',  // name을 username으로 변경
         'email',
         'password',
+        'role',      // role 추가 (일반 유저/관리자 구분용)
+        'balance',   // balance 추가 (포인트/잔액용)
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * Les attributs qui doivent ?tre masqu?s lors de la s?rialisation.
      *
      * @var list<string>
      */
@@ -34,7 +36,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * Obtenir les attributs qui doivent ?tre convertis.
      *
      * @return array<string, string>
      */

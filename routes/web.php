@@ -1,7 +1,27 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ChallengeController; // <-- 챌린지 컨트롤러 연결
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+// 1. 메인 화면
+Route::get('/', [ChallengeController::class, 'index'])->name('home');
+
+// 2. 대시보드
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+// 3. 로그인한 사람만 가능한 기능들
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // 챌린지 등록 기능
+    Route::get('/sell', [ChallengeController::class, 'create'])->name('challenges.create');
+    Route::post('/sell', [ChallengeController::class, 'store'])->name('challenges.store');
 });
+
+// 이제 파일이 생성되었으므로 에러가 나지 않습니다.
+require __DIR__.'/auth.php';
