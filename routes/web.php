@@ -21,6 +21,11 @@ Route::middleware('auth')->group(function () {
     // 챌린지 등록 기능
     Route::get('/sell', [ChallengeController::class, 'create'])->name('challenges.create');
     Route::post('/sell', [ChallengeController::class, 'store'])->name('challenges.store');
+
+    // 장바구니 관련 라우트
+    Route::get('/cart', [App\Http\Controllers\CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add/{id}', [App\Http\Controllers\CartController::class, 'add'])->name('cart.add');
+    Route::delete('/cart/{id}', [App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
 });
 
 // 이제 파일이 생성되었으므로 에러가 나지 않습니다.

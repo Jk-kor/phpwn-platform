@@ -14,7 +14,7 @@ return new class extends Migration
             $table->text('description');
             $table->string('category'); // Web, Pwn, Crypto, etc.
             $table->string('difficulty'); // Noob, Mid, Hard, Insane
-            $table->decimal('price', 10, 2)->default(0);
+            $table->decimal('price', 20, 2)->default(0);
             $table->foreignId('author_id')->constrained('users')->onDelete('cascade'); // 작성자
             $table->string('image_url')->nullable();
             $table->string('access_url')->nullable();

@@ -56,6 +56,6 @@ class ChallengeController extends Controller
         ]);
 
     // 3. Redirection vers le tableau de bord après la réussite
-        return redirect()->route('dashboard')->with('status', 'Challenge created successfully!');
+        return redirect()->route('home')->with('success', 'Challenge created successfully!');
     }
 }
