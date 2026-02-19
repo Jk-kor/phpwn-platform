@@ -1,59 +1,104 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🏴‍☠️ CTF Marketplace Platform
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> Plateforme d'achat et de vente de challenges CTF (type HackTheBox) développée avec Laravel 12, TailwindCSS et Vite.
 
-## About Laravel
+## 🚀 Fonctionnalités principales
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Marketplace de challenges CTF** :
+  - Parcourez, achetez et téléchargez des challenges (Web, Pwn, Crypto, etc.)
+  - Système de panier et paiement (fictif)
+  - Historique des achats et challenges résolus
+  - Téléchargement sécurisé (accès réservé aux acheteurs)
+  - Soumission de flag avec vérification automatique (hashé côté serveur)
+- **Vente de challenges** :
+  - Déposez vos propres challenges à vendre
+  - Gestion des fichiers, catégories, difficulté, prix, etc.
+- **Gestion utilisateur** :
+  - Authentification, inscription, gestion du profil
+  - Rôles : utilisateur, admin, creator
+  - Ban/déban, promotion admin (interface admin)
+- **Administration** :
+  - Tableau de bord admin : gestion des utilisateurs et challenges
+  - Activation/désactivation, suppression, modération
+- **Sécurité** :
+  - Accès restreint selon achat/rôle
+  - Protection contre double scoring, IDOR, throttling sur la soumission de flag
+- **Expérience utilisateur** :
+  - Interface responsive et moderne (TailwindCSS, Blade, Alpine.js)
+  - Notifications de succès/erreur
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🛠️ Stack & technologies
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Backend** : Laravel 12 (PHP 8.2+)
+- **Frontend** : Blade, TailwindCSS, Alpine.js
+- **Build** : Vite
+- **Base de données** : SQLite (par défaut), support MySQL/PostgreSQL
+- **Tests** : PHPUnit, Laravel Breeze (auth scaffolding)
 
-## Learning Laravel
+## ⚡ Installation & démarrage rapide
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```bash
+# 1. Cloner le repo
+$ git clone <repo-url>
+$ cd phpwn-platform
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# 2. Installer les dépendances PHP & JS
+$ composer install
+$ npm install
 
-## Laravel Sponsors
+# 3. Copier l'exemple d'environnement et générer la clé
+$ cp .env.example .env
+$ php artisan key:generate
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# 4. Lancer les migrations et seeders (optionnel)
+$ php artisan migrate --seed
 
-### Premium Partners
+# 5. Lancer le serveur de dev
+$ php artisan serve
+# et en parallèle (pour le front)
+$ npm run dev
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## 🔑 Commandes utiles
 
-## Contributing
+- `php artisan migrate:fresh --seed` : Réinitialise la base et recharge les données de démo
+- `php artisan test` : Lance la suite de tests
+- `npm run dev` : Lance le build front en mode dev (Vite)
+- `npm run build` : Build de production
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 📁 Structure principale
 
-## Code of Conduct
+- `app/Http/Controllers/` : Contrôleurs (Challenge, Cart, Admin, Auth...)
+- `app/Models/` : Modèles Eloquent (User, Challenge, Invoice...)
+- `resources/views/` : Vues Blade (dashboard, admin, challenges, achats...)
+- `routes/web.php` : Routes principales
+- `database/migrations/` : Migrations SQL
+- `public/` : Fichiers publics (index.php, assets)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 👤 Rôles & droits
 
-## Security Vulnerabilities
+- **Utilisateur** : Parcours, achète, résout des challenges
+- **Vendeur** : Dépose ses propres challenges
+- **Admin/Creator** : Modère, gère les utilisateurs/challenges
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 🔒 Sécurité
 
-## License
+- Accès aux fichiers et soumission de flag réservés aux acheteurs
+- Flags stockés hashés (SHA256)
+- Throttling sur la soumission de flag
+- Protection contre IDOR, double scoring, accès admin sécurisé
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 🧪 Tests
+
+- Tests unitaires et fonctionnels avec PHPUnit
+- Dossiers : `tests/Unit/` et `tests/Feature/`
+
+## 📦 Dépendances principales
+
+- Laravel 12, PHP 8.2+
+- TailwindCSS, Vite, Alpine.js
+- PHPUnit, Faker, Laravel Breeze
+
+## 📄 Licence
+
+Projet open-source sous licence MIT.
