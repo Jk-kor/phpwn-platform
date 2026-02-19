@@ -52,3 +52,13 @@ Route::middleware('auth')->group(function () {
 
 // 이제 파일이 생성되었으므로 에러가 나지 않습니다.
 require __DIR__.'/auth.php';
+
+// Admin routes (liste des utilisateurs & gestion des challenges)
+use App\Http\Controllers\AdminController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+    Route::post('/admin/users/{user}/toggle-ban', [AdminController::class, 'toggleBan'])->name('admin.users.toggleBan');
+    Route::post('/admin/users/{user}/toggle-admin', [AdminController::class, 'toggleAdmin'])->name('admin.users.toggleAdmin');
+    Route::post('/admin/challenges/{challenge}/toggle-active', [AdminController::class, 'toggleChallenge'])->name('admin.challenges.toggleActive');
+});

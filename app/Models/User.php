@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'role',      // role 추가 (일반 유저/관리자 구분용)
         'balance',   // balance 추가 (포인트/잔액용)
+        'is_banned', // bannissement
     ];
 
     /**
@@ -45,6 +46,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_banned' => 'boolean',
         ];
     }
 

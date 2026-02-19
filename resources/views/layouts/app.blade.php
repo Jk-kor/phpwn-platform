@@ -27,9 +27,15 @@
                 </header>
             @endisset
 
-            <!-- Contenu de la page -->
+            <!-- Contenu de la page: supporte $slot (component) ou @section('content') -->
             <main>
-                {{ $slot }}
+                {{-- pour les composants Blade (<x-app-layout>) --}}
+                {{ $slot ?? '' }}
+
+                {{-- pour les vues qui utilisent @extends('layouts.app') / @section('content') --}}
+                @hasSection('content')
+                    @yield('content')
+                @endif
             </main>
         </div>
     </body>
