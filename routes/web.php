@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ChallengeController; // <-- 챌린지 컨트롤러 연결
+use App\Http\Controllers\ChallengeController;
+use App\Http\Controllers\AccountController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\MyChallengeController;
@@ -11,6 +12,9 @@ Route::get('/', [ChallengeController::class, 'index'])->name('home');
 
 // Page de détails d'un challenge
 Route::get('/challenges/{id}', [ChallengeController::class, 'show'])->name('challenges.show');
+
+// Profil public (accessible sans connexion)
+Route::get('/account', [AccountController::class, 'show'])->name('account.show');
 
 // 2. 대시보드
 Route::get('/dashboard', function () {
@@ -48,6 +52,9 @@ Route::middleware('auth')->group(function () {
 
     // Liste des achats (challenges achetés)
     Route::get('/purchases', [\App\Http\Controllers\PurchaseController::class, 'index'])->name('purchases.index');
+
+    // Compte utilisateur (privé) + ajout de crédits
+    Route::post('/account/add-credits', [AccountController::class, 'addCredits'])->name('account.addCredits');
 });
 
 // 이제 파일이 생성되었으므로 에러가 나지 않습니다.
@@ -61,4 +68,5 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/users/{user}/toggle-ban', [AdminController::class, 'toggleBan'])->name('admin.users.toggleBan');
     Route::post('/admin/users/{user}/toggle-admin', [AdminController::class, 'toggleAdmin'])->name('admin.users.toggleAdmin');
     Route::post('/admin/challenges/{challenge}/toggle-active', [AdminController::class, 'toggleChallenge'])->name('admin.challenges.toggleActive');
+    Route::post('/admin/users/{user}/reset-balance', [AdminController::class, 'resetBalance'])->name('admin.users.resetBalance');
 });

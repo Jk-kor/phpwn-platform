@@ -15,18 +15,20 @@ use Illuminate\Http\Response;
 class ChallengeController extends Controller
 {
     /**
-     * 메인 화면 (index.php 대체)
-     * 모든 챌린지 목록을 가져와서 welcome 뷰에 전달
+     * Page principale — liste des challenges actifs
      */
     public function index()
     {
-        // Récupérer par ordre chronologique inverse, y compris les informations de l'auteur
-        $challenges = Challenge::with('author')->orderBy('created_at', 'desc')->get();
+        // Récupérer uniquement les challenges actifs, par ordre chronologique inverse
+        $challenges = Challenge::with('author')
+            ->where('is_active', true)
+            ->orderBy('created_at', 'desc')
+            ->get();
         return view('welcome', compact('challenges'));
     }
 
     /**
-     * 상품 등록 폼 보여주기 (sell.php 화면 대체)
+     * Afficher le formulaire de création de challenge
      */
     public function create()
     {
@@ -34,7 +36,7 @@ class ChallengeController extends Controller
     }
 
     /**
-     * 상품 DB에 저장하기 (sell.php 로직 대체)
+     * Enregistrer un nouveau challenge en base de données
      */
     public function store(Request $request)
     {
@@ -49,13 +51,12 @@ class ChallengeController extends Controller
             'challenge_file' => 'nullable|file|mimes:zip,tar,gz,txt,pdf,exe,bin|max:20480',
         ]);
 
-        // 👇 추가된 부분: 파일 처리 로직 👇
+        // Traitement du fichier uploadé
         $filePath = null;
         if ($request->hasFile('challenge_file')) {
-            // 파일을 storage/app/challenges 폴더에 안전하게 저장 (외부 직접 접근 불가)
+            // Stockage sécurisé dans storage/app/challenges (non accessible publiquement)
             $filePath = $request->file('challenge_file')->store('challenges');
         }
-        // 👆 추가된 부분 끝 👆
 
         // 2. Sauvegarde dans la base de données
         Challenge::create([
@@ -63,16 +64,16 @@ class ChallengeController extends Controller
             'category' => $request->category,
             'difficulty' => $request->difficulty,
             'price' => $request->price,
-            'flag_hash' => hash('sha256', $request->flag_hash), // Le flag est chiffré par hash
+            'flag_hash' => hash('sha256', $request->flag_hash),
             'description' => $request->description,
-            'author_id' => Auth::id(), // ID de l'utilisateur connecté
+            'author_id' => Auth::id(),
             'image_url' => 'default.png',
-            'file_path' => $filePath, // 👈 DB에 저장된 파일 경로 기록
+            'file_path' => $filePath,
             'is_active' => true,
         ]);
 
-        // 3. Redirection vers le tableau de bord après la réussite
-        return redirect()->route('home')->with('success', 'Challenge created successfully!');
+        // 3. Redirection vers la page principale après succès
+        return redirect()->route('home')->with('success', 'Challenge créé avec succès !');
     }
 
     /**
@@ -81,6 +82,11 @@ class ChallengeController extends Controller
     public function show(Request $request, $id)
     {
         $challenge = Challenge::with('author')->findOrFail($id);
+
+        // Bloquer l'accès aux challenges inactifs pour les non-admins
+        if (! $challenge->is_active && (! $request->user() || $request->user()->role !== 'admin')) {
+            abort(404);
+        }
 
         $purchased = false;
         $userSolved = false;

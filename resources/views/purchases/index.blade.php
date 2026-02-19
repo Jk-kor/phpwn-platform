@@ -1,52 +1,85 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">🧾 Mes achats</h2>
+        <div class="flex items-center justify-between">
+            <h2 style="font-family:'JetBrains Mono',monospace; font-size:1rem; font-weight:700; color:var(--green);">
+                🧾 Mes achats
+            </h2>
+            <span style="color:var(--text-muted); font-size:0.8rem; font-family:'JetBrains Mono',monospace;">
+                {{ $challenges->count() }} challenge(s)
+            </span>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                @if($challenges->isEmpty())
-                    <div class="text-center py-12">
-                        <p class="text-gray-500 text-lg">Vous n'avez acheté aucun challenge pour le moment.</p>
-                        <a href="{{ route('home') }}" class="mt-4 inline-block text-indigo-600 font-bold hover:underline">Explorer les challenges &rarr;</a>
-                    </div>
-                @else
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        @foreach($challenges as $challenge)
-                            <div class="bg-white shadow rounded-lg p-4 border border-gray-100">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <a href="{{ route('challenges.show', $challenge->id) }}" class="text-lg font-bold text-gray-900 hover:underline">{{ $challenge->title }}</a>
-                                            @if($challenge->submissions && $challenge->submissions->isNotEmpty())
-                                                <span class="text-xs font-semibold text-white bg-green-600 px-2 py-0.5 rounded">Résolu</span>
-                                                @php
-                                                    $solved = $challenge->submissions->first();
-                                                @endphp
-                                            @else
-                                                @php $solved = null; @endphp
-                                            @endif
-                                        </div>
-                                        <div class="text-sm text-gray-500">{{ $challenge->category }} · {{ $challenge->difficulty }}</div>
-                                    </div>
-                                    <div class="text-indigo-600 font-bold">{{ number_format($challenge->price, 2) }} €</div>
-                                </div>
-                                <p class="text-sm text-gray-600 mt-3 line-clamp-2">{{ $challenge->description }}</p>
-                                <div class="mt-4 flex gap-2 items-center justify-between">
-                                    <div class="flex gap-2">
-                                        <a href="{{ route('challenges.show', $challenge->id) }}" class="text-sm px-3 py-2 bg-gray-100 rounded hover:bg-gray-200">Voir</a>
-                                        <a href="{{ route('challenges.download', $challenge->id) }}" class="text-sm px-3 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Télécharger</a>
-                                    </div>
-                                    @if(isset($solved) && $solved)
-                                        <div class="text-sm text-gray-500">Résolu le {{ \Carbon\Carbon::parse($solved->submitted_at)->format('d/m/Y H:i') }}</div>
+    <div style="padding:2rem 0;">
+        <div style="max-width:1000px; margin:0 auto; padding:0 1.5rem;">
+
+            @if($challenges->isEmpty())
+                <div class="glass-card" style="padding:4rem 2rem; text-align:center;">
+                    <div style="font-size:3rem; margin-bottom:1rem;">🛒</div>
+                    <p style="color:var(--text-muted); font-size:1rem; font-family:'JetBrains Mono',monospace; margin-bottom:1rem;">
+                        Vous n'avez acheté aucun challenge pour le moment.
+                    </p>
+                    <a href="{{ route('home') }}" class="btn-green" style="display:inline-block; padding:0.6rem 1.4rem; font-size:0.85rem; text-decoration:none;">
+                        Explorer les challenges →
+                    </a>
+                </div>
+            @else
+                <div style="display:flex; flex-direction:column; gap:1rem;">
+                    @foreach($challenges as $challenge)
+                    <div class="glass-card" style="padding:1.25rem 1.5rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap;">
+
+                            <div style="flex:1; min-width:0;">
+                                <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; margin-bottom:0.4rem;">
+                                    <a href="{{ route('challenges.show', $challenge->id) }}"
+                                        style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:1rem; color:var(--text); text-decoration:none;"
+                                        onmouseover="this.style.color='var(--green)'" onmouseout="this.style.color='var(--text)'">
+                                        {{ $challenge->title }}
+                                    </a>
+                                    @if($challenge->submissions && $challenge->submissions->isNotEmpty())
+                                        <span style="background:rgba(0,255,136,0.15); border:1px solid var(--green); color:var(--green); padding:0.15rem 0.55rem; border-radius:20px; font-size:0.68rem; font-family:'JetBrains Mono',monospace; font-weight:700;">
+                                            ✓ Résolu
+                                        </span>
                                     @endif
                                 </div>
+                                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+                                    <span class="{{ ctfCatClass($challenge->category) }}">{{ $challenge->category }}</span>
+                                    <span class="{{ ctfDiffClass($challenge->difficulty) }}" style="font-size:0.7rem; font-family:'JetBrains Mono',monospace; font-weight:700;">{{ $challenge->difficulty }}</span>
+                                </div>
+                                <p style="color:var(--text-muted); font-size:0.82rem; margin:0; line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">
+                                    {{ $challenge->description }}
+                                </p>
+                                @if($challenge->submissions && $challenge->submissions->isNotEmpty())
+                                    <div style="color:var(--text-muted); font-size:0.75rem; font-family:'JetBrains Mono',monospace; margin-top:0.4rem;">
+                                        Résolu le {{ \Carbon\Carbon::parse($challenge->submissions->first()->submitted_at)->format('d/m/Y H:i') }}
+                                    </div>
+                                @endif
                             </div>
-                        @endforeach
+
+                            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.75rem; flex-shrink:0;">
+                                <div style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:1.1rem; color:var(--green);">
+                                    {{ number_format($challenge->price, 2) }} €
+                                </div>
+                                <div style="display:flex; gap:0.5rem;">
+                                    <a href="{{ route('challenges.show', $challenge->id) }}"
+                                        class="btn-dark"
+                                        style="padding:0.4rem 0.85rem; font-size:0.78rem; text-decoration:none;">
+                                        Voir
+                                    </a>
+                                    <a href="{{ route('challenges.download', $challenge->id) }}"
+                                        class="btn-green"
+                                        style="padding:0.4rem 0.85rem; font-size:0.78rem; text-decoration:none;">
+                                        ⬇ Télécharger
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
-                @endif
-            </div>
+                    @endforeach
+                </div>
+            @endif
+
         </div>
     </div>
 </x-app-layout>

@@ -1,11 +1,141 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🚩 PHPWN Platform — Plateforme de Bug Bounty / CTF
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Projet final PHP — Plateforme e-commerce orientée cybersécurité, permettant aux utilisateurs d'acheter, vendre et résoudre des challenges CTF.
+
+Développé avec **Laravel 11**, **MySQL** et **Tailwind CSS**.
+
+---
+
+## 📋 Fonctionnalités implémentées
+
+### Obligatoires
+- ✅ Inscription (`/register`) — username, email, password, bio, skill_level
+- ✅ Connexion (`/login`) — par username + password, avec rate limiting
+- ✅ Page d'accueil (`/`) — liste des challenges par ordre chronologique inverse
+- ✅ Détail d'un challenge (`/challenges/{id}`) — description, soumission de flag, téléchargement
+- ✅ Création de challenge (`/sell`) — avec upload de fichier sécurisé
+- ✅ Modification / Suppression de challenge (`/challenges/{id}/edit`)
+- ✅ Panier (`/cart`) — ajout, suppression, calcul du total
+- ✅ Validation de commande (`/checkout`) — vérification de solde, adresse de facturation, transaction DB
+- ✅ Factures (`/invoices`) — historique des achats avec adresse de facturation
+- ✅ Mon compte (`/account`) — profil privé : challenges créés, achetés, factures, score, recharge de solde
+- ✅ Profil public (`/account?id=X`) — pseudo, niveau, challenges créés, flags résolus
+- ✅ Espace administrateur (`/admin`) — gestion des utilisateurs (ban, rôle, reset solde) et challenges (activer/désactiver)
+- ✅ Soumission de flag — hachage SHA-256, protection anti-double submission, throttle (10 req/min)
+- ✅ Téléchargement sécurisé — réservé aux acheteurs
+
+### Sécurité
+- ✅ Mots de passe hachés (bcrypt via Laravel)
+- ✅ Protection CSRF sur tous les formulaires
+- ✅ Requêtes préparées (Eloquent ORM — protection SQLi)
+- ✅ Gestion des rôles côté backend (user / admin / creator)
+- ✅ Régénération de session à la connexion
+- ✅ Race condition évitée sur le paiement (DB lock `lockForUpdate()`)
+- ✅ IDOR protégé sur les téléchargements et soumissions
+
+---
+
+## ⚙️ Prérequis
+
+- PHP >= 8.2
+- MySQL / MariaDB
+- Composer
+- Node.js + npm
+- XAMPP (Windows) ou équivalent
+
+---
+
+## 🚀 Installation
+
+### 1. Cloner le repository
+
+```bash
+git clone https://github.com/Jk-kor/phpwn-platform.git
+cd phpwn-platform
+```
+
+### 2. Installer les dépendances
+
+```bash
+composer install
+npm install && npm run build
+```
+
+### 3. Configuration de l'environnement
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+Modifier `.env` :
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=php_exam_db
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 4. Créer la base de données
+
+Dans PhpMyAdmin, créer une base `php_exam_db`, puis :
+
+```bash
+php artisan migrate
+```
+
+Ou importer directement le fichier SQL fourni :
+
+```
+php_exam_db.sql
+```
+
+### 5. Lancer le serveur
+
+```bash
+php artisan serve
+```
+
+Accéder à : [http://localhost:8000](http://localhost:8000)
+
+---
+
+## 🧪 Comptes de test
+
+| Rôle | Username | Email | Mot de passe |
+|------|----------|-------|--------------|
+| Admin | `admin` | `admin@phpwn.fr` | `password` |
+| Utilisateur | `hacker` | `hacker@phpwn.fr` | `password` |
+
+> Ces comptes doivent être créés manuellement via `/register` puis le rôle `admin` assigné directement en base ou via le panel admin.
+
+---
+
+## 🗄️ Structure de la base de données
+
+| Table | Description |
+|-------|-------------|
+| `users` | Utilisateurs (username, email, password, balance, role, bio, skill_level) |
+| `challenges` | Challenges CTF (title, category, difficulty, price, flag_hash, author_id) |
+| `cart` | Panier utilisateur |
+| `invoices` | Factures (avec adresse de facturation) |
+| `invoice_items` | Détail des achats par facture |
+| `submissions` | Soumissions de flag |
+
+---
+
+## 🛠️ Framework utilisé
+
+**Laravel 11** — choisi pour :
+- Sa structure MVC claire et maintenable
+- Son ORM Eloquent (requêtes préparées automatiques → protection SQLi)
+- Son système de middleware pour la gestion des rôles et sessions
+- Sa protection CSRF intégrée
+- Sa gestion native des fichiers uploadés
+
 
 ## About Laravel
 

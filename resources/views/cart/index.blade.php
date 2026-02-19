@@ -1,87 +1,112 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            🛒 Your Shopping Cart
+        <h2 style="font-family:'JetBrains Mono',monospace; font-size:1rem; font-weight:700; color:var(--green);">
+            🛒 Panier
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                
-                @if(session('success'))
-                    <div class="bg-green-100 text-green-700 p-3 rounded mb-4 border border-green-200">
-                        {{ session('success') }}
-                    </div>
-                @endif
-                @if(session('error'))
-                    <div class="bg-red-100 text-red-700 p-3 rounded mb-4 border border-red-200">
-                        {{ session('error') }}
-                    </div>
-                @endif
+    <div style="padding:2rem 0;">
+        <div style="max-width:900px; margin:0 auto; padding:0 1.5rem;">
 
-                @if($cartItems->count() > 0)
-                    <table class="min-w-full leading-normal">
+            @if(session('success'))
+                <div class="alert-success" style="margin-bottom:1.5rem;">{{ session('success') }}</div>
+            @endif
+            @if(session('error'))
+                <div class="alert-error" style="margin-bottom:1.5rem;">{{ session('error') }}</div>
+            @endif
+
+            @if($cartItems->count() > 0)
+                <!-- Tableau panier -->
+                <div class="glass-card" style="margin-bottom:1.5rem; overflow:hidden;">
+                    <table style="width:100%; border-collapse:collapse;">
                         <thead>
-                            <tr class="border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                <th class="px-5 py-3">Challenge Title</th>
-                                <th class="px-5 py-3">Category</th>
-                                <th class="px-5 py-3 text-right">Price</th>
-                                <th class="px-5 py-3"></th>
+                            <tr style="border-bottom:1px solid var(--border);">
+                                <th style="padding:0.75rem 1rem; text-align:left;" class="section-title">Challenge</th>
+                                <th style="padding:0.75rem 1rem; text-align:left;" class="section-title">Catégorie</th>
+                                <th style="padding:0.75rem 1rem; text-align:right;" class="section-title">Prix</th>
+                                <th style="padding:0.75rem 1rem;"></th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($cartItems as $item)
-                                <tr class="border-b border-gray-200 hover:bg-gray-50">
-                                    <td class="px-5 py-5 text-sm">
-                                        <p class="text-gray-900 font-bold">{{ $item->challenge->title }}</p>
-                                    </td>
-                                    <td class="px-5 py-5 text-sm">
-                                        <span class="bg-indigo-100 text-indigo-800 text-xs font-semibold px-2.5 py-0.5 rounded">
-                                            {{ $item->challenge->category }}
-                                        </span>
-                                    </td>
-                                    <td class="px-5 py-5 text-sm text-right">
-                                        {{ number_format($item->challenge->price, 2) }} €
-                                    </td>
-                                    <td class="px-5 py-5 text-sm text-right">
-                                        <form action="{{ route('cart.remove', $item->id) }}" method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900 font-bold text-xs uppercase">
-                                                Remove
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
+                            <tr style="border-bottom:1px solid var(--border);" onmouseover="this.style.background='rgba(0,255,136,0.03)'" onmouseout="this.style.background='transparent'">
+                                <td style="padding:1rem; font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--text); font-size:0.9rem;">
+                                    {{ $item->challenge->title }}
+                                </td>
+                                <td style="padding:1rem;">
+                                    <span class="{{ ctfCatClass($item->challenge->category) }}">{{ $item->challenge->category }}</span>
+                                </td>
+                                <td style="padding:1rem; text-align:right; font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--green);">
+                                    {{ number_format($item->challenge->price, 2) }} €
+                                </td>
+                                <td style="padding:1rem; text-align:right;">
+                                    <form action="{{ route('cart.remove', $item->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" style="background:none; border:none; color:#f85149; cursor:pointer; font-size:0.8rem; font-weight:700; font-family:'JetBrains Mono',monospace; padding:0.25rem 0.5rem; border-radius:4px; transition:all 0.2s;" onmouseover="this.style.background='rgba(248,81,73,0.1)'" onmouseout="this.style.background='none'">
+                                            ✕ Retirer
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
                             @endforeach
-                            
-                            <tr class="bg-gray-50">
-                                <td colspan="2" class="px-5 py-5 text-right font-bold text-gray-700 uppercase">Total Amount:</td>
-                                <td class="px-5 py-5 text-right font-bold text-xl text-indigo-600">{{ number_format($total, 2) }} €</td>
+                        </tbody>
+                        <tfoot>
+                            <tr style="border-top:2px solid var(--border); background:rgba(0,255,136,0.03);">
+                                <td colspan="2" style="padding:1rem; text-align:right; color:var(--text-muted); font-size:0.85rem; font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:0.08em;">
+                                    Total
+                                </td>
+                                <td style="padding:1rem; text-align:right; font-family:'JetBrains Mono',monospace; font-size:1.4rem; font-weight:700; color:var(--green);">
+                                    {{ number_format($total, 2) }} €
+                                </td>
                                 <td></td>
                             </tr>
-                        </tbody>
+                        </tfoot>
                     </table>
+                </div>
 
-                    <div class="mt-8 flex justify-end">
-                        <form action="{{ route('checkout.process') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded shadow-lg transform hover:scale-105 transition duration-300">
-                                💳 Proceed to Checkout
+                <!-- Formulaire facturation -->
+                <div class="glass-card" style="padding:1.75rem;">
+                    <p class="section-title" style="margin-bottom:1.25rem;">🧾 Informations de facturation</p>
+                    <form action="{{ route('checkout.process') }}" method="POST">
+                        @csrf
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin-bottom:1.5rem;">
+                            <div>
+                                <label style="display:block; margin-bottom:0.4rem;">Adresse</label>
+                                <input type="text" name="billing_address" required placeholder="12 rue de la Paix"
+                                    style="width:100%; padding:0.65rem 0.9rem; font-size:0.85rem;" />
+                            </div>
+                            <div>
+                                <label style="display:block; margin-bottom:0.4rem;">Ville</label>
+                                <input type="text" name="billing_city" required placeholder="Paris"
+                                    style="width:100%; padding:0.65rem 0.9rem; font-size:0.85rem;" />
+                            </div>
+                            <div>
+                                <label style="display:block; margin-bottom:0.4rem;">Code postal</label>
+                                <input type="text" name="billing_zip" required placeholder="75001"
+                                    style="width:100%; padding:0.65rem 0.9rem; font-size:0.85rem;" />
+                            </div>
+                        </div>
+                        <div style="display:flex; justify-content:flex-end;">
+                            <button type="submit" class="btn-green" style="padding:0.75rem 2rem; font-size:0.9rem;">
+                                💳 Valider la commande
                             </button>
-                        </form>
-                    </div>
-                    @else
-                    <div class="text-center py-12">
-                        <div class="text-6xl mb-4">🛒</div>
-                        <p class="text-gray-500 text-lg">Your cart is empty.</p>
-                        <a href="{{ route('home') }}" class="mt-4 inline-block text-indigo-600 font-bold hover:underline">
-                            Browse Challenges &rarr;
-                        </a>
-                    </div>
-                @endif
-            </div>
+                        </div>
+                    </form>
+                </div>
+
+            @else
+                <div class="glass-card" style="text-align:center; padding:4rem 2rem;">
+                    <div style="font-size:3rem; margin-bottom:1rem;">🛒</div>
+                    <p style="color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:0.95rem; margin-bottom:1.5rem;">
+                        Votre panier est vide.
+                    </p>
+                    <a href="{{ route('home') }}" class="btn-green" style="padding:0.65rem 1.5rem; text-decoration:none; font-size:0.85rem;">
+                        Explorer les challenges →
+                    </a>
+                </div>
+            @endif
+
         </div>
     </div>
 </x-app-layout>

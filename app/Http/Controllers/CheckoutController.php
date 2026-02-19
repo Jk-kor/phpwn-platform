@@ -14,6 +14,12 @@ class CheckoutController extends Controller
 {
     public function process(Request $request)
     {
+        $request->validate([
+            'billing_address' => 'required|string|max:255',
+            'billing_city'    => 'required|string|max:100',
+            'billing_zip'     => 'required|string|max:20',
+        ]);
+
         $userId = Auth::id();
 
         try {
@@ -29,7 +35,7 @@ class CheckoutController extends Controller
 
             if ($cartItems->isEmpty()) {
                 DB::rollBack();
-                return redirect()->route('cart.index')->with('error', '장바구니가 비어있습니다.');
+                return redirect()->route('cart.index')->with('error', 'Votre panier est vide.');
             }
 
             // 총 결제 금액 계산
@@ -41,7 +47,7 @@ class CheckoutController extends Controller
             if ($user->balance < $totalAmount) {
                 DB::rollBack();
                 // 돈이 부족하면 여기서 트랜잭션을 엎고 에러 메시지와 함께 돌려보냅니다.
-                return redirect()->route('cart.index')->with('error', '결제 실패: 잔고가 부족합니다. (현재 잔고: ' . number_format($user->balance, 2) . ' €)');
+                return redirect()->route('cart.index')->with('error', 'Paiement refusé : solde insuffisant. (Solde actuel : ' . number_format($user->balance, 2) . ' €)');
             }
 
             // 잔고가 충분하다면 돈을 깎고 저장합니다.
@@ -50,9 +56,12 @@ class CheckoutController extends Controller
 
             // 1. 영수증(Invoice) 본체 생성
             $invoice = Invoice::create([
-                'user_id' => $userId,
-                'total_amount' => $totalAmount,
-                'status' => 'completed'
+                'user_id'         => $userId,
+                'total_amount'    => $totalAmount,
+                'status'          => 'completed',
+                'billing_address' => $request->billing_address,
+                'billing_city'    => $request->billing_city,
+                'billing_zip'     => $request->billing_zip,
             ]);
 
             // 2. 영수증 상세 항목(InvoiceItem) 기록
@@ -70,12 +79,12 @@ class CheckoutController extends Controller
             // 모든 작업이 성공하면 DB 반영
             DB::commit();
 
-            return redirect()->route('home')->with('success', '결제가 완료되었습니다! (남은 잔고: ' . number_format($user->balance, 2) . ' €)');
+            return redirect()->route('home')->with('success', 'Paiement effectué ! (Solde restant : ' . number_format($user->balance, 2) . ' €)');
 
         } catch (\Exception $e) {
             // 에러 발생 시 모든 DB 변경 사항 취소
             DB::rollBack();
-            return redirect()->route('cart.index')->with('error', '결제 처리 중 오류가 발생했습니다: ' . $e->getMessage());
+            return redirect()->route('cart.index')->with('error', 'Erreur lors du traitement du paiement : ' . $e->getMessage());
         }
     }
 }

@@ -64,4 +64,11 @@ class AdminController extends Controller
         $challenge->save();
         return back();
     }
+
+    public function resetBalance(User $user)
+    {
+        $user->balance = 10000.00;
+        $user->save();
+        return back()->with('success', 'Solde de ' . $user->username . ' réinitialisé à 10 000 €.');
+    }
 }

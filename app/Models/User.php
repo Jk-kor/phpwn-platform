@@ -54,4 +54,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Invoice::class);
     }
+
+    public function challenges()
+    {
+        return $this->hasMany(Challenge::class, 'author_id');
+    }
+
+    public function submissions()
+    {
+        return $this->hasMany(Submission::class);
+    }
 }
