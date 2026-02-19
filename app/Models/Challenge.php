@@ -20,6 +20,7 @@ class Challenge extends Model
         'author_id',
         'image_url',
         'is_active',
+        'file_path',
         'access_url',
     ];
 

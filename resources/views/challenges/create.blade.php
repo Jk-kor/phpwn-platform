@@ -8,8 +8,8 @@
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                
-                <form method="POST" action="{{ route('challenges.store') }}">
+
+                <form method="POST" action="{{ route('challenges.store') }}" enctype="multipart/form-data">
                     @csrf
 
                     <div class="mb-4">
@@ -51,6 +51,14 @@
                         <p class="text-xs text-gray-500 mt-1">* The flag will be securely hashed.</p>
                     </div>
 
+                    <div class="mb-4">
+                        <label for="challenge_file" class="block text-gray-700 font-bold mb-2">Challenge File (Optional)</label>
+                        <input type="file" name="challenge_file" id="challenge_file" class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200">
+                        <p class="text-xs text-gray-500 mt-1">* Allowed: .zip, .tar, .gz, .txt, .pdf, .exe, .bin (Max: 20MB)</p>
+                        @error('challenge_file')
+                            <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
                     <div class="mb-6">
                         <label for="description" class="block text-gray-700 font-bold mb-2">Description</label>
                         <textarea name="description" id="description" rows="4" class="w-full border-gray-300 rounded-md shadow-sm" required></textarea>

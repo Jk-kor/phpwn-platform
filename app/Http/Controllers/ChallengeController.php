@@ -14,7 +14,7 @@ class ChallengeController extends Controller
      */
     public function index()
     {
-    // Récupérer par ordre chronologique inverse, y compris les informations de l'auteur
+        // Récupérer par ordre chronologique inverse, y compris les informations de l'auteur
         $challenges = Challenge::with('author')->orderBy('created_at', 'desc')->get();
         return view('welcome', compact('challenges'));
     }
@@ -32,7 +32,7 @@ class ChallengeController extends Controller
      */
     public function store(Request $request)
     {
-    // 1. Validation (vérification des champs obligatoires)
+        // 1. Validation (vérification des champs obligatoires)
         $request->validate([
             'title' => 'required|string|max:255',
             'category' => 'required|string',
@@ -40,9 +40,18 @@ class ChallengeController extends Controller
             'price' => 'required|numeric|min:0',
             'flag_hash' => 'required|string',
             'description' => 'required|string',
+            'challenge_file' => 'nullable|file|mimes:zip,tar,gz,txt,pdf,exe,bin|max:20480',
         ]);
 
-    // 2. Sauvegarde dans la base de données
+        // 👇 추가된 부분: 파일 처리 로직 👇
+        $filePath = null;
+        if ($request->hasFile('challenge_file')) {
+            // 파일을 storage/app/challenges 폴더에 안전하게 저장 (외부 직접 접근 불가)
+            $filePath = $request->file('challenge_file')->store('challenges');
+        }
+        // 👆 추가된 부분 끝 👆
+
+        // 2. Sauvegarde dans la base de données
         Challenge::create([
             'title' => $request->title,
             'category' => $request->category,
@@ -52,10 +61,11 @@ class ChallengeController extends Controller
             'description' => $request->description,
             'author_id' => Auth::id(), // ID de l'utilisateur connecté
             'image_url' => 'default.png',
+            'file_path' => $filePath, // 👈 DB에 저장된 파일 경로 기록
             'is_active' => true,
         ]);
 
-    // 3. Redirection vers le tableau de bord après la réussite
+        // 3. Redirection vers le tableau de bord après la réussite
         return redirect()->route('home')->with('success', 'Challenge created successfully!');
     }
 }
