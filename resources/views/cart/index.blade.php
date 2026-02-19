@@ -65,11 +65,14 @@
                     </table>
 
                     <div class="mt-8 flex justify-end">
-                        <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded shadow-lg transform hover:scale-105 transition duration-300">
-                            💳 Proceed to Checkout
-                        </button>
+                        <form action="{{ route('checkout.process') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded shadow-lg transform hover:scale-105 transition duration-300">
+                                💳 Proceed to Checkout
+                            </button>
+                        </form>
                     </div>
-                @else
+                    @else
                     <div class="text-center py-12">
                         <div class="text-6xl mb-4">🛒</div>
                         <p class="text-gray-500 text-lg">Your cart is empty.</p>

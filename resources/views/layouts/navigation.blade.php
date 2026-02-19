@@ -23,6 +23,9 @@
 
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 @auth
+                    <span class="text-sm font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full mr-4 border border-green-200 shadow-sm">
+                        💰 {{ number_format(Auth::user()->balance, 2) }} €
+                    </span>
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
@@ -91,7 +94,8 @@
                 <div class="px-4">
                     <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->username }}</div>
                     <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-                </div>
+                    <div class="font-bold text-sm text-green-600 mt-1">💰 {{ number_format(Auth::user()->balance, 2) }} €</div>
+                    </div>
 
                 <div class="mt-3 space-y-1">
                     <x-responsive-nav-link :href="route('profile.edit')">

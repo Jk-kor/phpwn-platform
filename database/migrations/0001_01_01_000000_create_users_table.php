@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('username')->unique(); // 필수
             $table->string('email')->unique();    // 필수
             $table->string('password');           // 필수
-            $table->decimal('balance', 10, 2)->default(0.00); // 필수: 잔액
+            $table->decimal('balance', 10, 2)->default(10000.00); // 필수: 잔액
             $table->enum('role', ['user', 'admin', 'creator'])->default('user'); // 필수: 역할
             $table->string('profile_picture')->default('default.png'); // 선택
             $table->text('bio')->nullable();      // 선택

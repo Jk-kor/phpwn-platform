@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ChallengeController; // <-- 챌린지 컨트롤러 연결
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\MyChallengeController;
 
 // 1. 메인 화면
 Route::get('/', [ChallengeController::class, 'index'])->name('home');
@@ -26,6 +28,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/cart', [App\Http\Controllers\CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add/{id}', [App\Http\Controllers\CartController::class, 'add'])->name('cart.add');
     Route::delete('/cart/{id}', [App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
+
+    Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/my-challenges', [MyChallengeController::class, 'index'])->name('my.challenges');
 });
 
 // 이제 파일이 생성되었으므로 에러가 나지 않습니다.
