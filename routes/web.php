@@ -29,6 +29,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/cart/add/{id}', [App\Http\Controllers\CartController::class, 'add'])->name('cart.add');
     Route::delete('/cart/{id}', [App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
 
+    // Historique des achats
+    Route::get('/invoices', [App\Http\Controllers\InvoiceController::class, 'index'])->name('invoices.index');
+
     Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
     Route::get('/my-challenges', [MyChallengeController::class, 'index'])->name('my.challenges');
 });

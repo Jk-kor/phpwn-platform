@@ -17,6 +17,9 @@
                         <x-nav-link :href="route('challenges.create')" :active="request()->routeIs('challenges.create')">
                             {{ __('Sell Challenge') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('invoices.index')" :active="request()->routeIs('invoices.*')">
+                            {{ __('Mes achats') }}
+                        </x-nav-link>
                     @endauth
                 </div>
             </div>
@@ -46,6 +49,10 @@
 
                             <x-dropdown-link :href="route('cart.index')">
                                 {{ __('My Cart') }}
+                            </x-dropdown-link>
+
+                            <x-dropdown-link :href="route('invoices.index')">
+                                {{ __('Mes achats') }}
                             </x-dropdown-link>
 
                             <form method="POST" action="{{ route('logout') }}">
@@ -86,6 +93,9 @@
                 <x-responsive-nav-link :href="route('challenges.create')" :active="request()->routeIs('challenges.create')">
                     {{ __('Sell Challenge') }}
                 </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('invoices.index')" :active="request()->routeIs('invoices.*')">
+                        {{ __('Mes achats') }}
+                    </x-responsive-nav-link>
             @endauth
         </div>
 
