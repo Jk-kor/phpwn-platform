@@ -5,6 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Challenge;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\InvoiceItem;
+use App\Models\Submission;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Redirect;
+
+use Illuminate\Http\Response;
 
 class ChallengeController extends Controller
 {
@@ -67,5 +73,103 @@ class ChallengeController extends Controller
 
         // 3. Redirection vers le tableau de bord après la réussite
         return redirect()->route('home')->with('success', 'Challenge created successfully!');
+    }
+
+    /**
+     * Afficher la page de détail d'un challenge (description, téléchargement, soumission de flag)
+     */
+    public function show(Request $request, $id)
+    {
+        $challenge = Challenge::with('author')->findOrFail($id);
+
+        $purchased = false;
+        if ($request->user()) {
+        $purchased = InvoiceItem::where('challenge_id', $challenge->id)
+            ->whereHas('invoice', function ($q) use ($request) {
+                $q->where('user_id', $request->user()->id)->whereIn('status', ['paid', 'completed']);
+            })->exists();
+        }
+
+        return view('challenges.show', compact('challenge', 'purchased'));
+    }
+
+    /**
+     * Téléchargement sécurisé du fichier de challenge (vérifie preuve d'achat)
+     */
+    public function download(Request $request, $id)
+    {
+        $user = $request->user();
+        if (! $user) {
+            abort(403);
+        }
+
+        $challenge = Challenge::findOrFail($id);
+
+        $hasBought = InvoiceItem::where('challenge_id', $challenge->id)
+            ->whereHas('invoice', function ($q) use ($user) {
+                $q->where('user_id', $user->id)->whereIn('status', ['paid', 'completed']);
+            })->exists();
+
+        if (! $hasBought) {
+            abort(403);
+        }
+
+        if (! $challenge->file_path || ! Storage::exists($challenge->file_path)) {
+            abort(404);
+        }
+
+        return Storage::download($challenge->file_path, basename($challenge->file_path));
+    }
+
+    /**
+     * Soumission d'un flag. Vérifie achat, empêche double scoring.
+     */
+    public function submitFlag(Request $request, $id)
+    {
+        $user = $request->user();
+        if (! $user) {
+            return redirect()->route('login');
+        }
+
+        $request->validate(['flag' => 'required|string']);
+
+        $challenge = Challenge::findOrFail($id);
+
+        // Vérifier achat
+        $hasBought = InvoiceItem::where('challenge_id', $challenge->id)
+            ->whereHas('invoice', function ($q) use ($user) {
+                $q->where('user_id', $user->id)->whereIn('status', ['paid', 'completed']);
+            })->exists();
+
+        if (! $hasBought) {
+            abort(403);
+        }
+
+        // Empêcher double scoring
+        $alreadySolved = Submission::where('user_id', $user->id)
+            ->where('challenge_id', $challenge->id)
+            ->where('is_valid', true)
+            ->exists();
+
+        if ($alreadySolved) {
+            return back()->with('info', 'Vous avez déjà résolu ce challenge.');
+        }
+
+        $submitted = $request->input('flag');
+        $isValid = hash('sha256', $submitted) === $challenge->flag_hash;
+
+        Submission::create([
+            'user_id' => $user->id,
+            'challenge_id' => $challenge->id,
+            'flag_submitted' => $submitted,
+            'is_valid' => $isValid,
+            'submitted_at' => now(),
+        ]);
+
+        if ($isValid) {
+            return back()->with('success', 'Flag correct — bien joué !');
+        }
+
+        return back()->with('error', 'Flag incorrect.');
     }
 }

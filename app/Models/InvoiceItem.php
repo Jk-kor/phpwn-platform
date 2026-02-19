@@ -13,4 +13,10 @@ class InvoiceItem extends Model
     {
         return $this->belongsTo(Challenge::class);
     }
+
+    // 관계: 이 인보이스 아이템은 어떤 인보이스에 속하는가?
+    public function invoice()
+    {
+        return $this->belongsTo(Invoice::class);
+    }
 }

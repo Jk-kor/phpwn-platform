@@ -35,7 +35,7 @@
                                 <span class="text-sm text-gray-500">{{ $challenge->difficulty }}</span>
                             </div>
 
-                            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $challenge->title }}</h3>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2"><a href="{{ route('challenges.show', $challenge->id) }}" class="hover:underline">{{ $challenge->title }}</a></h3>
                             
                             <p class="text-2xl font-bold text-indigo-600 mb-4">{{ number_format($challenge->price, 2) }} €</p>
                             

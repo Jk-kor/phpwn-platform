@@ -9,6 +9,9 @@ use App\Http\Controllers\MyChallengeController;
 // 1. 메인 화면
 Route::get('/', [ChallengeController::class, 'index'])->name('home');
 
+// Page de détails d'un challenge
+Route::get('/challenges/{id}', [ChallengeController::class, 'show'])->name('challenges.show');
+
 // 2. 대시보드
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -34,6 +37,13 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
     Route::get('/my-challenges', [MyChallengeController::class, 'index'])->name('my.challenges');
+    
+    // Téléchargement sécurisé et soumission de flag
+    Route::get('/challenges/{id}/download', [\App\Http\Controllers\ChallengeController::class, 'download'])->name('challenges.download');
+    Route::post('/challenges/{id}/submit-flag', [\App\Http\Controllers\ChallengeController::class, 'submitFlag'])->name('challenges.submitFlag');
+
+    // Liste des achats (challenges achetés)
+    Route::get('/purchases', [\App\Http\Controllers\PurchaseController::class, 'index'])->name('purchases.index');
 });
 
 // 이제 파일이 생성되었으므로 에러가 나지 않습니다.
