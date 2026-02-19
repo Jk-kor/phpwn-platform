@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Challenge extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     // Colonnes autorisées pour l'affectation de masse
     protected $fillable = [
@@ -28,5 +29,10 @@ class Challenge extends Model
     public function author()
     {
         return $this->belongsTo(User::class, 'author_id');
+    }
+
+    public function submissions()
+    {
+        return $this->hasMany(\App\Models\Submission::class);
     }
 }

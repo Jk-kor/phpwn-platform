@@ -83,14 +83,20 @@ class ChallengeController extends Controller
         $challenge = Challenge::with('author')->findOrFail($id);
 
         $purchased = false;
+        $userSolved = false;
         if ($request->user()) {
-        $purchased = InvoiceItem::where('challenge_id', $challenge->id)
-            ->whereHas('invoice', function ($q) use ($request) {
-                $q->where('user_id', $request->user()->id)->whereIn('status', ['paid', 'completed']);
-            })->exists();
+            $purchased = InvoiceItem::where('challenge_id', $challenge->id)
+                ->whereHas('invoice', function ($q) use ($request) {
+                    $q->where('user_id', $request->user()->id)->whereIn('status', ['paid', 'completed']);
+                })->exists();
+
+            $userSolved = \App\Models\Submission::where('challenge_id', $challenge->id)
+                ->where('user_id', $request->user()->id)
+                ->where('is_valid', true)
+                ->exists();
         }
 
-        return view('challenges.show', compact('challenge', 'purchased'));
+        return view('challenges.show', compact('challenge', 'purchased', 'userSolved'));
     }
 
     /**
@@ -171,5 +177,74 @@ class ChallengeController extends Controller
         }
 
         return back()->with('error', 'Flag incorrect.');
+    }
+
+    /**
+     * Show edit form (author only)
+     */
+    public function edit(Request $request, $id)
+    {
+        $challenge = Challenge::findOrFail($id);
+        if (Auth::id() !== $challenge->author_id) {
+            abort(403);
+        }
+        return view('challenges.edit', compact('challenge'));
+    }
+
+    /**
+     * Update challenge (author only)
+     */
+    public function update(Request $request, $id)
+    {
+        $challenge = Challenge::findOrFail($id);
+        if (Auth::id() !== $challenge->author_id) {
+            abort(403);
+        }
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'category' => 'required|string',
+            'difficulty' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'description' => 'required|string',
+            'challenge_file' => 'nullable|file|mimes:zip,tar,gz,txt,pdf,exe,bin|max:20480',
+        ]);
+
+        // handle optional file replacement
+        if ($request->hasFile('challenge_file')) {
+            // delete old file if exists
+            if ($challenge->file_path && Storage::exists($challenge->file_path)) {
+                Storage::delete($challenge->file_path);
+            }
+            $challenge->file_path = $request->file('challenge_file')->store('challenges');
+        }
+
+        $challenge->title = $request->title;
+        $challenge->category = $request->category;
+        $challenge->difficulty = $request->difficulty;
+        $challenge->price = $request->price;
+        $challenge->description = $request->description;
+        $challenge->is_active = $request->has('is_active');
+        $challenge->save();
+
+        return redirect()->route('challenges.show', $challenge->id)->with('success', 'Challenge updated.');
+    }
+
+    /**
+     * Delete challenge (author only)
+     */
+    public function destroy(Request $request, $id)
+    {
+        $challenge = Challenge::findOrFail($id);
+        if (Auth::id() !== $challenge->author_id) {
+            abort(403);
+        }
+
+        if ($challenge->file_path && Storage::exists($challenge->file_path)) {
+            Storage::delete($challenge->file_path);
+        }
+
+        $challenge->delete();
+        return redirect()->route('home')->with('success', 'Challenge supprimé.');
     }
 }

@@ -16,7 +16,10 @@ class PurchaseController extends Controller
             $q->where('user_id', $user->id)->whereIn('status', ['paid', 'completed']);
         })->pluck('challenge_id')->unique()->toArray();
 
-        $challenges = Challenge::whereIn('id', $challengeIds)->get();
+        $challenges = Challenge::whereIn('id', $challengeIds)
+            ->with(['submissions' => function ($q) use ($user) {
+                $q->where('user_id', $user->id)->where('is_valid', true);
+            }])->get();
 
         return view('purchases.index', compact('challenges'));
     }

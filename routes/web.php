@@ -26,6 +26,10 @@ Route::middleware('auth')->group(function () {
     // 챌린지 등록 기능
     Route::get('/sell', [ChallengeController::class, 'create'])->name('challenges.create');
     Route::post('/sell', [ChallengeController::class, 'store'])->name('challenges.store');
+    // Edit / Update / Delete (only author)
+    Route::get('/challenges/{id}/edit', [\App\Http\Controllers\ChallengeController::class, 'edit'])->name('challenges.edit');
+    Route::patch('/challenges/{id}', [\App\Http\Controllers\ChallengeController::class, 'update'])->name('challenges.update');
+    Route::delete('/challenges/{id}', [\App\Http\Controllers\ChallengeController::class, 'destroy'])->name('challenges.destroy');
 
     // 장바구니 관련 라우트
     Route::get('/cart', [App\Http\Controllers\CartController::class, 'index'])->name('cart.index');
@@ -40,7 +44,7 @@ Route::middleware('auth')->group(function () {
     
     // Téléchargement sécurisé et soumission de flag
     Route::get('/challenges/{id}/download', [\App\Http\Controllers\ChallengeController::class, 'download'])->name('challenges.download');
-    Route::post('/challenges/{id}/submit-flag', [\App\Http\Controllers\ChallengeController::class, 'submitFlag'])->name('challenges.submitFlag');
+    Route::post('/challenges/{id}/submit-flag', [\App\Http\Controllers\ChallengeController::class, 'submitFlag'])->middleware('throttle:10,1')->name('challenges.submitFlag');
 
     // Liste des achats (challenges achetés)
     Route::get('/purchases', [\App\Http\Controllers\PurchaseController::class, 'index'])->name('purchases.index');

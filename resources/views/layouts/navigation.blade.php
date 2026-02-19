@@ -14,8 +14,8 @@
                     </x-nav-link>
                     
                     @auth
-                        <x-nav-link :href="route('challenges.create')" :active="request()->routeIs('challenges.create')">
-                            {{ __('Sell Challenge') }}
+                        <x-nav-link :href="route('purchases.index')" :active="request()->routeIs('purchases.*')">
+                            {{ __('Ma bibliothèque') }}
                         </x-nav-link>
                     @endauth
                 </div>
@@ -91,8 +91,8 @@
                 {{ __('Home') }}
             </x-responsive-nav-link>
             @auth
-                <x-responsive-nav-link :href="route('challenges.create')" :active="request()->routeIs('challenges.create')">
-                    {{ __('Sell Challenge') }}
+                <x-responsive-nav-link :href="route('purchases.index')" :active="request()->routeIs('purchases.*')">
+                    {{ __('Ma bibliothèque') }}
                 </x-responsive-nav-link>
             @endauth
         </div>

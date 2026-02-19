@@ -17,15 +17,30 @@
                             <div class="bg-white shadow rounded-lg p-4 border border-gray-100">
                                 <div class="flex justify-between items-start">
                                     <div>
-                                        <a href="{{ route('challenges.show', $challenge->id) }}" class="text-lg font-bold text-gray-900 hover:underline">{{ $challenge->title }}</a>
+                                        <div class="flex items-center gap-2">
+                                            <a href="{{ route('challenges.show', $challenge->id) }}" class="text-lg font-bold text-gray-900 hover:underline">{{ $challenge->title }}</a>
+                                            @if($challenge->submissions && $challenge->submissions->isNotEmpty())
+                                                <span class="text-xs font-semibold text-white bg-green-600 px-2 py-0.5 rounded">Résolu</span>
+                                                @php
+                                                    $solved = $challenge->submissions->first();
+                                                @endphp
+                                            @else
+                                                @php $solved = null; @endphp
+                                            @endif
+                                        </div>
                                         <div class="text-sm text-gray-500">{{ $challenge->category }} · {{ $challenge->difficulty }}</div>
                                     </div>
                                     <div class="text-indigo-600 font-bold">{{ number_format($challenge->price, 2) }} €</div>
                                 </div>
                                 <p class="text-sm text-gray-600 mt-3 line-clamp-2">{{ $challenge->description }}</p>
-                                <div class="mt-4 flex gap-2">
-                                    <a href="{{ route('challenges.show', $challenge->id) }}" class="text-sm px-3 py-2 bg-gray-100 rounded hover:bg-gray-200">Voir</a>
-                                    <a href="{{ route('challenges.download', $challenge->id) }}" class="text-sm px-3 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Télécharger</a>
+                                <div class="mt-4 flex gap-2 items-center justify-between">
+                                    <div class="flex gap-2">
+                                        <a href="{{ route('challenges.show', $challenge->id) }}" class="text-sm px-3 py-2 bg-gray-100 rounded hover:bg-gray-200">Voir</a>
+                                        <a href="{{ route('challenges.download', $challenge->id) }}" class="text-sm px-3 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Télécharger</a>
+                                    </div>
+                                    @if(isset($solved) && $solved)
+                                        <div class="text-sm text-gray-500">Résolu le {{ \Carbon\Carbon::parse($solved->submitted_at)->format('d/m/Y H:i') }}</div>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
